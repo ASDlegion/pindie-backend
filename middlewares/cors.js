@@ -1,6 +1,6 @@
 const allowedCors = [
-    'durov-back.nomoredomainswork.ru',
-    'durov-front.nomoredomainswork.ru',
+    'https://durov-back.nomoredomainswork.ru',
+    'https://durov-front.nomoredomainswork.ru',
     'http://localhost:3000',
     'http://localhost:3001'
 ];
