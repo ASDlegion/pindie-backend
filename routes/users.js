@@ -1,21 +1,52 @@
-// Создаём роут для запросов пользователей 
-const usersRouter = require('express').Router();
+const usersRouter = require("express").Router();
+const { checkAuth } = require("../middlewares/auth.js");
+const { sendMe } = require("../controllers/users");
 
-// Импортируем вспомогательные функции
-const { findAllUsers, createUser, findUserById, updateUser, deleteUser, checkEmptyUserFields, checkEmptyUserFieldsWOPassword, filterPassword, hashPassword } = require('../middlewares/users');
-const { sendAllUsers, sendUserCreated, sendUserById, sendUserUpdated, sendUserDeleted, sendMe } = require('../controllers/users');
-const { checkAuth } = require('../middlewares/auth');
+const {
+  findAllUsers,
+  findUserById,
+  createUser,
+  updateUser,
+  deleteUser,
+  checkEmptyNameAndEmail,
+  checkIsUserExists,
+  checkEmptyNameAndEmailAndPassword,
+  hashPassword,
+} = require("../middlewares/users");
 
-// Обрабатываем GET-запрос с роутом '/users'
-usersRouter.get('/users', findAllUsers, filterPassword, sendAllUsers);
-usersRouter.get('/users/:id', findAllUsers, filterPassword, sendUserById);
-usersRouter.get('/me', checkAuth, sendMe)
+const {
+  sendAllUsers,
+  sendUserById,
+  sendUserCreated,
+  sendUserUpdated,
+  sendUserDeleted,
+} = require("../controllers/users");
 
-usersRouter.put('/users/:id', checkEmptyUserFieldsWOPassword, checkAuth, findUserById, updateUser, sendUserUpdated)
+usersRouter.get("/users", findAllUsers, sendAllUsers);
 
-usersRouter.delete('/user/:id', checkAuth, deleteUser, sendUserDeleted)
+usersRouter.post(
+  "/users",
+  findAllUsers,
+  checkIsUserExists,
+  checkEmptyNameAndEmailAndPassword,
+  checkAuth,
+  hashPassword,
+  createUser,
+  sendUserCreated
+);
 
-usersRouter.post("/users", findAllUsers, checkEmptyUserFields, checkAuth, hashPassword, createUser, sendUserCreated); 
+usersRouter.get("/users/:id", findUserById, sendUserById);
 
-// Экспортируем роут для использования в приложении — app.js
+usersRouter.put(
+  "/users/:id",
+  checkEmptyNameAndEmail,
+  checkAuth,
+  updateUser,
+  sendUserUpdated
+);
+
+usersRouter.delete("/users/:id", checkAuth, deleteUser, sendUserDeleted);
+
+usersRouter.get("/me", checkAuth, sendMe);
+
 module.exports = usersRouter;
